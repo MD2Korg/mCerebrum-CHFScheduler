@@ -12,9 +12,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.md2k.chfscheduler.event.Event;
+import org.md2k.chfscheduler.event.EventEMA;
+import org.md2k.chfscheduler.event.Events;
 import org.md2k.mcerebrum_chfscheduler.R;
-
-import java.util.ArrayList;
 
 /**
  * Copyright (c) 2016, The University of Memphis, MD2K Center
@@ -43,54 +44,75 @@ import java.util.ArrayList;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class ListAdapter extends ArrayAdapter {
+    private static final String TAG = ListAdapter.class.getSimpleName();
     Context context;
-    ArrayList<Events.Event> events;
+    boolean isChanged;
 
-    public ListAdapter(Activity context, ArrayList<Events.Event> events) {
-        super(context, R.layout.items, events);
-        this.events = events;
+    public ListAdapter(Activity context) {
+        super(context, R.layout.items, Events.getInstance(context).getEvents());
         this.context = context;
+        isChanged=false;
     }
 
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View viewRow = layoutInflater.inflate(R.layout.items, null,
-                true);
+        View viewRow = layoutInflater.inflate(R.layout.items, null, true);
         Button button = (Button) viewRow.findViewById(R.id.button_event);
-        button.setText(events.get(i).name);
+        final Event event=Events.getInstance(context).getEvents().get(i);
+        button.setText(event.getName());
         button.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_teal));
         ImageView imageView_icon = (ImageView) viewRow.findViewById(R.id.imageView_icon);
-        imageView_icon.setImageDrawable(events.get(i).icon);
+        imageView_icon.setImageDrawable(event.getIcon());
 
-        ImageView imageView = (ImageView) viewRow.findViewById(R.id.image_status);
-        if (events.get(i).isCompleted())
-            imageView.setImageResource(R.drawable.ic_ok_teal_50dp);
-        else
-            imageView.setImageResource(R.drawable.ic_error_red_50dp);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button buttonStatus = (Button) viewRow.findViewById(R.id.button_status);
+        if (event.isCompleted()) {
+            buttonStatus.setBackground(ContextCompat.getDrawable(context, R.drawable.button_teal));
+            buttonStatus.setText(R.string.button_done);
+            buttonStatus.setTextColor(ContextCompat.getColor(context, R.color.black));
+        }
+        else {
+            buttonStatus.setBackground(ContextCompat.getDrawable(context, R.drawable.button_red));
+            buttonStatus.setText(R.string.button_start);
+            buttonStatus.setTextColor(ContextCompat.getColor(context, R.color.white));
+        }
+        View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isChanged=true;
                 try {
-                    if(events.get(i).type.equals("ema")) {
-                        Intent intent = context.getPackageManager().getLaunchIntentForPackage(events.get(i).packageName);
-                        intent.setAction(events.get(i).packageName);
-                        intent.putExtra("file_name", events.get(i).fileName);
-                        intent.putExtra("id", events.get(i).id);
-                        intent.putExtra("name", events.get(i).name);
+                    if(event.isEMA()) {
+                        EventEMA eventEMA= (EventEMA) event;
+                        eventEMA.start();
+                        Intent intent = context.getPackageManager().getLaunchIntentForPackage(event.getPackageName());
+                        intent.setAction(event.getPackageName());
+                        intent.putExtra("file_name", event.getFileName());
+                        intent.putExtra("id", event.getId());
+                        intent.putExtra("name", event.getName());
                         intent.putExtra("timeout", Integer.MAX_VALUE);
                         context.startActivity(intent);
                     }else {
                         Intent intent = new Intent();
-                        intent.setClassName(events.get(i).packageName, events.get(i).className);
-                        getContext().startActivity(intent);
+                        intent.setClassName(event.getPackageName(), event.getClassName());
+                        context.startActivity(intent);
                     }
                 } catch (Exception e) {
-                    Toast.makeText(getContext(), "Error: " + events.get(i).name + " is not installed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error: " + event.getName() + " is not installed.", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        };
+        button.setOnClickListener(onClickListener);
+        buttonStatus.setOnClickListener(onClickListener);
+
         return viewRow;
+    }
+
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    public void setChanged(boolean changed) {
+        isChanged = changed;
     }
 }

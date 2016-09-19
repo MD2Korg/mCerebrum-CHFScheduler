@@ -1,9 +1,9 @@
-package org.md2k.chfscheduler;
+package org.md2k.chfscheduler.event;
 
-import android.os.Environment;
+import com.google.gson.JsonArray;
 
-/*
- * Copyright (c) 2015, The University of Memphis, MD2K Center
+/**
+ * Copyright (c) 2016, The University of Memphis, MD2K Center
  * - Syed Monowar Hossain <monowar.hossain@gmail.com>
  * All rights reserved.
  *
@@ -28,13 +28,13 @@ import android.os.Environment;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class Constants {
-    public static final String INTENT_STOP = "service_stop";
-    public static final String SERVICE_NAME = "org.md2k.chfscheduler.ServiceChfScheduler";
-    public static final String INTENT_NAME = "scheduler";
-    public static final String CONFIG_DIRECTORY= Environment.getExternalStorageDirectory().getAbsolutePath() + "/mCerebrum/org.md2k.chfscheduler/";
-    public static final String CONFIG_FILENAME = "config.json";
-    public static final String NOTIFICATION_FILENAME = "notification.json";
-
+public class EMA {
+    String id;
+    String name;
+    String trigger_type;
+    long start_timestamp;
+    long end_timestamp;
+    String status;
+    JsonArray question_answers;
 
 }

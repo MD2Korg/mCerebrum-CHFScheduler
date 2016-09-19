@@ -2,13 +2,18 @@ package org.md2k.chfscheduler;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.md2k.chfscheduler.event.Events;
+import org.md2k.chfscheduler.logger.LogInfo;
+import org.md2k.datakitapi.DataKitAPI;
 import org.md2k.datakitapi.messagehandler.ResultCallback;
 import org.md2k.mcerebrum_chfscheduler.R;
 import org.md2k.utilities.UI.AlertDialogs;
@@ -43,10 +48,18 @@ import org.md2k.utilities.permission.PermissionInfo;
 
 public class ActivityShowList extends AppCompatActivity {
     Events events;
+    boolean isRemindShow;
+    ListAdapter listAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+        isRemindShow = getIntent().getBooleanExtra("remind",false);
+        if (!DataKitAPI.getInstance(this).isConnected()) {
+            Toast.makeText(getApplicationContext(), "!!! Error !!! Datakit connection failed...", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         PermissionInfo permissionInfo = new PermissionInfo();
         permissionInfo.getPermissions(this, new ResultCallback<Boolean>() {
             @Override
@@ -55,8 +68,15 @@ public class ActivityShowList extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "!PERMISSION DENIED !!! Could not continue...", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    events=new Events(getBaseContext());
-                    ListAdapter listAdapter = new ListAdapter(ActivityShowList.this,events.getEvents());
+                    if(isRemindShow) {
+                        AlertDialogs.AlertDialog(ActivityShowList.this, "CHF Protocol", "It's time to collect Sensor Data and answer some questions", R.drawable.ic_info_teal_48dp, "Ok", null, null, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                    }
+                    events = Events.getInstance(ActivityShowList.this);
+                    listAdapter = new ListAdapter(ActivityShowList.this);
                     ListView androidListView = (ListView) findViewById(R.id.custom_listview_example);
                     androidListView.setAdapter(listAdapter);
                     setButtons();
@@ -64,45 +84,67 @@ public class ActivityShowList extends AppCompatActivity {
             }
         });
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
+//        if(listAdapter!=null && listAdapter.isChanged) {
+            listAdapter.notifyDataSetChanged();
+//            listAdapter.setChanged(false);
+//        }
         setButtons();
         super.onResume();
     }
-    void setButtons(){
+    @Override
+    public void onBackPressed(){
+
+    }
+
+    void setButtons() {
         Button button1 = (Button) findViewById(R.id.button_1);
-        if(events.isCompleted())
-            button1.setText("Done");
-        else button1.setText("Skip");
+        if (events.isCompleted())
+            button1.setText(R.string.button_done);
+        else button1.setText(R.string.button_skip);
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!events.isCompleted()) {
+                if (!events.isCompleted()) {
                     AlertDialogs.AlertDialog(ActivityShowList.this, "Skip", "Do you want to skip?", R.drawable.ic_error_red_50dp, "Yes", "Cancel", null, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (which == Dialog.BUTTON_POSITIVE)
+                            if (which == Dialog.BUTTON_POSITIVE) {
+                                Intent intent=new Intent(Constants.INTENT_NAME);
+                                intent.putExtra("action",LogInfo.STATUS_SKIP);
+                                LocalBroadcastManager.getInstance(ActivityShowList.this).sendBroadcast(intent);
                                 finish();
+                            }
                         }
                     });
-                }else
+                } else {
+                    Intent intent=new Intent(Constants.INTENT_NAME);
+                    intent.putExtra("action",LogInfo.STATUS_COMPLETED);
+                    LocalBroadcastManager.getInstance(ActivityShowList.this).sendBroadcast(intent);
                     finish();
+                }
             }
         });
         Button button2 = (Button) findViewById(R.id.button_2);
-        button2.setText("Remind Me (1 hour)");
+        button2.setText(R.string.button_remind);
+        button2.setEnabled(isRemindShow);
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialogs.AlertDialog(ActivityShowList.this, "Remind me after 1 hour", "Do you want a reminder after 1 hour?", R.drawable.ic_error_red_50dp, "Yes", "Cancel", null, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(which== Dialog.BUTTON_POSITIVE)
+                        if (which == Dialog.BUTTON_POSITIVE) {
+                            Intent intent=new Intent(Constants.INTENT_NAME);
+                            intent.putExtra("action",LogInfo.STATUS_REMIND);
+                            LocalBroadcastManager.getInstance(ActivityShowList.this).sendBroadcast(intent);
                             finish();
+                        }
                     }
                 });
             }
         });
-
     }
 }

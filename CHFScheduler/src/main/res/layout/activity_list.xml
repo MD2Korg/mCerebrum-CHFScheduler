@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Please measure the following"
+        android:text="Please complete the following"
         android:id="@+id/textView_title"
         android:paddingLeft="10dp"
         android:paddingTop="32dp"
@@ -20,7 +20,7 @@
         android:textStyle="bold"
         android:gravity="center"
         android:textSize="24dp"
-        android:textColor="@color/teal_700" />
+        android:textColor="@color/deeporange_A400" />
 
     <ListView
         android:id="@+id/custom_listview_example"

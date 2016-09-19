@@ -1,22 +1,31 @@
-package org.md2k.chfscheduler;
+package org.md2k.chfscheduler.config;
 
-import android.os.Environment;
 
-/*
+import com.google.gson.Gson;
+
+import org.md2k.chfscheduler.Constants;
+import org.md2k.utilities.FileManager;
+import org.md2k.utilities.data_format.notification.NotificationRequests;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
+/**
  * Copyright (c) 2015, The University of Memphis, MD2K Center
  * - Syed Monowar Hossain <monowar.hossain@gmail.com>
  * All rights reserved.
- *
+ * <p/>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p/>
  * * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * <p/>
  * * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * <p/>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,13 +37,31 @@ import android.os.Environment;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class Constants {
-    public static final String INTENT_STOP = "service_stop";
-    public static final String SERVICE_NAME = "org.md2k.chfscheduler.ServiceChfScheduler";
-    public static final String INTENT_NAME = "scheduler";
-    public static final String CONFIG_DIRECTORY= Environment.getExternalStorageDirectory().getAbsolutePath() + "/mCerebrum/org.md2k.chfscheduler/";
-    public static final String CONFIG_FILENAME = "config.json";
-    public static final String NOTIFICATION_FILENAME = "notification.json";
+public class ConfigNotification {
+    NotificationRequests notificationRequests;
 
+    public ConfigNotification() {
+        readNotifications();
+    }
 
+    public NotificationRequests getNotificationRequests() {
+        return notificationRequests;
+    }
+
+    private void readNotifications() {
+        BufferedReader br;
+        String filepath = Constants.CONFIG_DIRECTORY + Constants.NOTIFICATION_FILENAME;
+        if (!FileManager.isExist(filepath))
+            notificationRequests = null;
+        else {
+            try {
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
+                Gson gson = new Gson();
+                notificationRequests = gson.fromJson(br, NotificationRequests.class);
+            } catch (Exception e) {
+                notificationRequests = null;
+            }
+        }
+
+    }
 }

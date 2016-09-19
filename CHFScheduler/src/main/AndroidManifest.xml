@@ -29,7 +29,8 @@
             android:name="org.md2k.chfscheduler.ActivityShowList"
             android:enabled="true"
             android:exported="true"
-            android:label="Settings"
+            android:label="CHF Protocol"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="org.md2k.mcerebrum_chfscheduler.ActivityList" />

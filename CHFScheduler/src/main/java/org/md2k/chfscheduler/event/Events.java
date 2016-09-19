@@ -1,8 +1,6 @@
-package org.md2k.chfscheduler;
+package org.md2k.chfscheduler.event;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 
@@ -35,23 +33,29 @@ import java.util.ArrayList;
 public class Events {
     private ArrayList<Event> events;
     Context context;
-    public Events(Context context){
-        this.context=context;
-        events=new ArrayList<>();
-        events.add(new Event("weight","Measure Weight", "event",ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_weight_scale_48dp),"org.md2k.omron","org.md2k.omron.ActivityWeightScale",null));
-        events.add(new Event("blood_pressure","Measure Blood Pressure","event",ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_blood_pressure_teal_48dp),"org.md2k.omron","org.md2k.omron.ActivityBloodPressure",null));
-        events.add(new Event("easy_sense","Measure Heart Physiology","event",ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_easysense_teal_48dp),"org.md2k.easysense","org.md2k.easysense.ActivityEasySense",null));
-        events.add(new Event("medication","Medication Questionnaire","ema",ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_medication_teal_48dp),"org.md2k.ema","org.md2k.ema.ActivityMain","medication.json"));
-        events.add(new Event("ema","Survey","ema",ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_survey_teal_48dp),"org.md2k.ema","org.md2k.ema.ActivityMain","questionnaire.json"));
+    private static Events instance=null;
+    public static Events getInstance(Context context){
+        if(instance==null)
+            instance=new Events(context);
+        return instance;
     }
 
+    private Events(Context context){
+        this.context=context;
+        events=new ArrayList<>();
+        events.add(new EventWeightScale(context));
+        events.add(new EventBloodPressure(context));
+        events.add(new EventEasySense(context));
+        events.add(new EventEMA(context,EventEMA.EMA_MEDICATION));
+        events.add(new EventEMA(context,EventEMA.EMA_SURVEY));
+    }
     public ArrayList<Event> getEvents() {
         return events;
     }
     public String[] getId(){
         String ids[]=new String[events.size()];
         for(int i=0;i<events.size();i++)
-            ids[i]=events.get(i).id;
+            ids[i]=events.get(i).getId();
         return ids;
     }
 
@@ -62,26 +66,4 @@ public class Events {
         return true;
     }
 
-    public class Event{
-        String id;
-        String type;
-        String name;
-        Drawable icon;
-        String packageName;
-        String className;
-        String fileName;
-
-        public Event(String id,String name, String type, Drawable icon, String packageName, String className, String fileName) {
-            this.id = id;
-            this.name = name;
-            this.type=type;
-            this.icon = icon;
-            this.packageName = packageName;
-            this.className = className;
-            this.fileName = fileName;
-        }
-        boolean isCompleted(){
-            return false;
-        }
-    };
 }

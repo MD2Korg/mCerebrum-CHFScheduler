@@ -1,28 +1,27 @@
 package org.md2k.chfscheduler;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.md2k.chfscheduler.day.DayManager;
+import org.md2k.chfscheduler.logger.LoggerManager;
 import org.md2k.datakitapi.DataKitAPI;
 import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.messagehandler.OnConnectionListener;
 import org.md2k.datakitapi.messagehandler.ResultCallback;
-import org.md2k.datakitapi.source.datasource.DataSourceBuilder;
-import org.md2k.datakitapi.source.datasource.DataSourceClient;
-import org.md2k.datakitapi.source.datasource.DataSourceType;
 import org.md2k.datakitapi.time.DateTime;
+import org.md2k.mcerebrum_chfscheduler.R;
 import org.md2k.utilities.Report.LogStorage;
 import org.md2k.utilities.permission.PermissionInfo;
-
-import java.util.ArrayList;
 
 /*
  * Copyright (c) 2015, The University of Memphis, MD2K Center
@@ -54,14 +53,15 @@ import java.util.ArrayList;
 public class ServiceChfScheduler extends Service {
     private static final String TAG = ServiceChfScheduler.class.getSimpleName();
     private DataKitAPI dataKitAPI = null;
-    Handler handler;
+    DayManager dayManager;
+    LoggerManager loggerManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiverStop,
                 new IntentFilter(Constants.INTENT_STOP));
-        handler=new Handler();
+
         PermissionInfo permissionInfo = new PermissionInfo();
         permissionInfo.getPermissions(this, new ResultCallback<Boolean>() {
             @Override
@@ -74,6 +74,17 @@ public class ServiceChfScheduler extends Service {
                 }
             }
         });
+    }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        org.md2k.utilities.Report.Log.w(TAG, "onStartCommand()...");
+        startForeground(98764, getCompatNotification());
+        return START_STICKY;
+    }
+    private Notification getCompatNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle(getResources().getString(R.string.app_name));
+        return builder.build();
     }
 
     void load() {
@@ -89,7 +100,9 @@ public class ServiceChfScheduler extends Service {
                 @Override
                 public void onConnected() {
                     try {
-                        handler.postDelayed(runnableDay, 3000);
+                        loggerManager = LoggerManager.getInstance(ServiceChfScheduler.this);
+                        dayManager=DayManager.getInstance(ServiceChfScheduler.this);
+                        dayManager.start();
                     } catch (Exception e) {
                         Intent intent = new Intent(Constants.INTENT_STOP);
                         intent.putExtra("type", "ServiceMicrosoftBands.java...register error after connection");
@@ -103,7 +116,6 @@ public class ServiceChfScheduler extends Service {
             intent.putExtra("type", "ServiceMicrosoftBands.java...Connection Error");
             LocalBroadcastManager.getInstance(ServiceChfScheduler.this).sendBroadcast(intent);
         }
-
     }
 
     @Override
@@ -114,6 +126,7 @@ public class ServiceChfScheduler extends Service {
         org.md2k.utilities.Report.Log.w(TAG, "time=" + DateTime.convertTimeStampToDateTime(DateTime.getDateTime()) + ",timestamp=" + DateTime.getDateTime() + ",service_stop");
         super.onDestroy();
     }
+
     private BroadcastReceiver mMessageReceiverStop = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -127,27 +140,10 @@ public class ServiceChfScheduler extends Service {
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    Runnable runnableDay = new Runnable() {
-        @Override
-        public void run() {
-            ArrayList<DataSourceClient> dataSourceClients = null;
-            try {
-                dataSourceClients = DataKitAPI.getInstance(ServiceChfScheduler.this).find(new DataSourceBuilder().setType(DataSourceType.DAY_START));
-                org.md2k.utilities.Report.Log.d(TAG, "runnableListenDayStart()...dataSourceClients.size()=" + dataSourceClients.size());
-                if (dataSourceClients.size() == 0)
-                    handler.postDelayed(this, 1000);
-                else {
-                    Intent intent=new Intent(ServiceChfScheduler.this, ActivityShowList.class);
-                    ServiceChfScheduler.this.startActivity(intent);
-                }
-            } catch (DataKitException e) {
-                org.md2k.utilities.Report.Log.d(TAG,"DataKitException...runnableDay");
-                LocalBroadcastManager.getInstance(ServiceChfScheduler.this).sendBroadcast(new Intent(Constants.INTENT_STOP));
-            }
-        }
-    };
 
     synchronized void clear() {
+        if(dayManager!=null)
+            dayManager.stop();
         if (dataKitAPI != null) {
             dataKitAPI.disconnect();
             dataKitAPI = null;
