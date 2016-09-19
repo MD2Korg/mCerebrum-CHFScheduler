@@ -19,7 +19,6 @@ import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.messagehandler.OnConnectionListener;
 import org.md2k.datakitapi.messagehandler.ResultCallback;
 import org.md2k.datakitapi.time.DateTime;
-import org.md2k.mcerebrum_chfscheduler.R;
 import org.md2k.utilities.Report.LogStorage;
 import org.md2k.utilities.permission.PermissionInfo;
 

@@ -15,7 +15,6 @@ import android.widget.Toast;
 import org.md2k.chfscheduler.event.Event;
 import org.md2k.chfscheduler.event.EventEMA;
 import org.md2k.chfscheduler.event.Events;
-import org.md2k.mcerebrum_chfscheduler.R;
 
 /**
  * Copyright (c) 2016, The University of Memphis, MD2K Center

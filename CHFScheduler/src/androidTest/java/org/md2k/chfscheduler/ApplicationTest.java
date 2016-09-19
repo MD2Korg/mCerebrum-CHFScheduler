@@ -1,4 +1,4 @@
-package org.md2k.mcerebrum_chfscheduler;
+package org.md2k.chfscheduler;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

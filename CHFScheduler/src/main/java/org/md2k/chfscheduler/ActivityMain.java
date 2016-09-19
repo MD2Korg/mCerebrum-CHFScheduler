@@ -1,12 +1,10 @@
 package org.md2k.chfscheduler;
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,15 +12,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.md2k.datakitapi.messagehandler.ResultCallback;
 import org.md2k.datakitapi.time.DateTime;
-import org.md2k.mcerebrum_chfscheduler.R;
 import org.md2k.utilities.Apps;
 import org.md2k.utilities.UI.ActivityAbout;
 import org.md2k.utilities.UI.ActivityCopyright;
 import org.md2k.utilities.permission.PermissionInfo;
 
-import java.util.ArrayList;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Copyright (c) 2015, The University of Memphis, MD2K Center
@@ -58,6 +57,7 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_main);
         PermissionInfo permissionInfo = new PermissionInfo();

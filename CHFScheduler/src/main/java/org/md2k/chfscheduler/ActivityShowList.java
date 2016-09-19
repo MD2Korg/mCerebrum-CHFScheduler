@@ -15,7 +15,6 @@ import org.md2k.chfscheduler.event.Events;
 import org.md2k.chfscheduler.logger.LogInfo;
 import org.md2k.datakitapi.DataKitAPI;
 import org.md2k.datakitapi.messagehandler.ResultCallback;
-import org.md2k.mcerebrum_chfscheduler.R;
 import org.md2k.utilities.UI.AlertDialogs;
 import org.md2k.utilities.permission.PermissionInfo;
 
