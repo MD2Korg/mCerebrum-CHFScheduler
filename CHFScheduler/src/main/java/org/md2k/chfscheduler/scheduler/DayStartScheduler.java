@@ -53,7 +53,7 @@ public class DayStartScheduler {
     NotifierManager notifierManager;
     boolean isLaunched = false;
 
-    private static final long REMIND_TIMESTAMP = 1 * 60 * 1000; // 1 hour
+    private static final long REMIND_TIMESTAMP = 60 * 60 * 1000; // 1 hour
 
     public DayStartScheduler(Context context) {
         this.context = context;
