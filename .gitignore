@@ -41,7 +41,3 @@ output.json
 #NDK
 obj/
 .externalNativeBuild
-CHFScheduler0.0.1.apk
-fabric.properties
-libs/
-src/main/res/drawable/
