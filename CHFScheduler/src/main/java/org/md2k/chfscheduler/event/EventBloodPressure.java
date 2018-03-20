@@ -33,15 +33,15 @@ import org.md2k.datakitapi.source.datasource.DataSourceType;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class EventBloodPressure extends Event{
-    public EventBloodPressure(Context context) {
+class EventBloodPressure extends Event{
+    EventBloodPressure(Context context) {
         super(context);
         setName("Blood Pressure");
         setIcon(ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_blood_pressure_teal_48dp));
         setClassName("org.md2k.omron.ActivityBloodPressure");
         setDataSourceBuilder(createDataSourceBuilder());
     }
-    DataSourceBuilder createDataSourceBuilder(){
+    private DataSourceBuilder createDataSourceBuilder(){
         DataSourceBuilder dataSourceBuilder=new DataSourceBuilder();
         dataSourceBuilder=dataSourceBuilder.setType(DataSourceType.BLOOD_PRESSURE);
         dataSourceBuilder=dataSourceBuilder.setApplication(new ApplicationBuilder().setId("org.md2k.omron").build());

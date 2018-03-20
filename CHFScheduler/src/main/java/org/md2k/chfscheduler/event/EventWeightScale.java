@@ -33,15 +33,15 @@ import org.md2k.datakitapi.source.datasource.DataSourceType;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class EventWeightScale extends Event{
-    public EventWeightScale(Context context) {
+class EventWeightScale extends Event{
+    EventWeightScale(Context context) {
         super(context);
         setName("Weight");
         setIcon(ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_weight_scale_48dp));
         setClassName("org.md2k.omron.ActivityWeightScale");
         setDataSourceBuilder(createDataSourceBuilder());
     }
-    DataSourceBuilder createDataSourceBuilder(){
+    private DataSourceBuilder createDataSourceBuilder(){
         DataSourceBuilder dataSourceBuilder=new DataSourceBuilder();
         dataSourceBuilder=dataSourceBuilder.setType(DataSourceType.WEIGHT);
         dataSourceBuilder=dataSourceBuilder.setApplication(new ApplicationBuilder().setId("org.md2k.omron").build());

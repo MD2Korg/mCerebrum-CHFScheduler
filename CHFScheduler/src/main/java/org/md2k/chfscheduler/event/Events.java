@@ -32,7 +32,6 @@ import java.util.ArrayList;
  */
 public class Events {
     private ArrayList<Event> events;
-    Context context;
     private static Events instance=null;
     public static Events getInstance(Context context){
         if(instance==null)
@@ -41,7 +40,6 @@ public class Events {
     }
 
     private Events(Context context){
-        this.context=context;
         events=new ArrayList<>();
         events.add(new EventWeightScale(context));
         events.add(new EventBloodPressure(context));

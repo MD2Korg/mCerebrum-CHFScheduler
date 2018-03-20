@@ -34,15 +34,15 @@ import org.md2k.datakitapi.source.platform.PlatformType;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class EventEasySense extends Event{
-    public EventEasySense(Context context) {
+class EventEasySense extends Event{
+    EventEasySense(Context context) {
         super(context);
         setName("Chest");
         setIcon(ContextCompat.getDrawable(context, org.md2k.utilities.R.drawable.ic_chest_teal_48dp));
         setClassName("org.md2k.easysense.ActivityEasySense");
         setDataSourceBuilder(createDataSourceBuilder());
     }
-    DataSourceBuilder createDataSourceBuilder(){
+    private DataSourceBuilder createDataSourceBuilder(){
         DataSourceBuilder dataSourceBuilder=new DataSourceBuilder();
         dataSourceBuilder=dataSourceBuilder.setPlatform(new PlatformBuilder().setType(PlatformType.EASYSENSE).build());
         dataSourceBuilder=dataSourceBuilder.setApplication(new ApplicationBuilder().setId("org.md2k.easysense").build());

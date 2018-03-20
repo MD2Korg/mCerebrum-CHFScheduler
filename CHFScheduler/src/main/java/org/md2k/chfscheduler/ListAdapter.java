@@ -3,6 +3,7 @@ package org.md2k.chfscheduler;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,19 +43,20 @@ import org.md2k.chfscheduler.event.Events;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class ListAdapter extends ArrayAdapter {
+class ListAdapter extends ArrayAdapter {
     private static final String TAG = ListAdapter.class.getSimpleName();
-    Context context;
-    boolean isChanged;
+    private Context context;
+    private boolean isChanged;
 
-    public ListAdapter(Activity context) {
+    ListAdapter(Activity context) {
         super(context, R.layout.items, Events.getInstance(context).getEvents());
         this.context = context;
         isChanged=false;
     }
 
+    @NonNull
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, @NonNull ViewGroup viewGroup) {
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View viewRow = layoutInflater.inflate(R.layout.items, null, true);
