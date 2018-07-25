@@ -5,7 +5,6 @@ mCerebrum is a configurable smartphone software platform for mobile and wearable
 Scheduler for the CHF Study at Ohio State University.
 
 You can find more information about MD2K software on our [software website](https://md2k.org/software) or the MD2K organization on our [MD2K website](https://md2k.org/).
-More information about mPerf can be found on the [mPerf website](http://mperf.md2k.org/).
 
 ## Contributing
 Please read our [Contributing Guidelines](https://md2k.org/contributing/contributing-guidelines.html) for details on the process for submitting pull requests to us.
